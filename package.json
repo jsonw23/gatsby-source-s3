@@ -30,8 +30,7 @@
     "build": "babel src --out-dir ./dist --ignore \"**/__tests__,**/*.d.ts\" --extensions \".ts,.js\"",
     "start": "(cd ../../integration-tests/source-s3 && yarn build && yarn serve)",
     "test:e2e": "cypress run",
-    "test": "start-server-and-test 'yarn start' http://localhost:9000 'yarn test:e2e'",
-    "prepare": "yarn build"
+    "test": "start-server-and-test 'yarn start' http://localhost:9000 'yarn test:e2e'"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.7",
