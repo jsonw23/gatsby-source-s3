@@ -31,7 +31,7 @@
     "start": "(cd ../../integration-tests/source-s3 && yarn build && yarn serve)",
     "test:e2e": "cypress run",
     "test": "start-server-and-test 'yarn start' http://localhost:9000 'yarn test:e2e'",
-    "install": "yarn install && yarn build"
+    "install": "yarn build"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.7",
