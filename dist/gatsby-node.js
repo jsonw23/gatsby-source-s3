@@ -114,9 +114,6 @@ const onCreateNode = async function ({
   reporter,
   createNodeId
 }) {
-  if (node.internal.type === "S3Object") {
-    console.log(node.Key);
-  }
   if (node.internal.type === "S3Object" && node.Key && isImage(node.Key)) {
     try {
       // download image file and save as node
@@ -129,7 +126,6 @@ const onCreateNode = async function ({
       });
       if (imageFile) {
         // add local image file to s3 object node
-        console.log(node.url);
         createNodeField({
           node,
           name: "localFile",
