@@ -1,0 +1,46 @@
+{
+  "name": "@jsonw23/gatsby-source-s3",
+  "description": "A Gatsby plugin to source objects and images from AWS S3", 
+  "version": "3.2.3",
+  "contributors": [
+    "Robin Métral <robin@metral.ch>",
+    "Alex Moon <alex.jared.moon@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gatsby-uc/plugins.git",
+    "directory": "packages/gatsby-source-s3"
+  },
+  "license": "MIT",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-source-plugin",
+    "s3"
+  ],
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.7",
+    "@types/node": "^18.11.18",
+    "babel-preset-gatsby-package": "^3.3.0",
+    "cypress": "^11.2.0",
+    "start-server-and-test": "^1.15.2"
+  },
+  "scripts": {
+    "build": "babel src --out-dir ./dist --ignore \"**/__tests__,**/*.d.ts\" --extensions \".ts,.js\"",
+    "start": "(cd ../../integration-tests/source-s3 && yarn build && yarn serve)",
+    "test:e2e": "cypress run",
+    "test": "start-server-and-test 'yarn start' http://localhost:9000 'yarn test:e2e'"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.7",
+    "aws-sdk": "^2.1286.0",
+    "gatsby-source-filesystem": "^5.3.1"
+  },
+  "peerDependencies": {
+    "gatsby": "^4.5.2 || ^5.0.0"
+  },
+  "engines": {
+    "node": ">=14.15.0"
+  }
+}
