@@ -10,7 +10,8 @@ const isImage = (key: string): boolean => /\.(jpe?g|png|webp|tiff?|pdf)$/i.test(
 
 interface PluginOptionsType extends PluginOptions {
   aws: ConfigurationOptions & ConfigurationServicePlaceholders & ClientApiVersions;
-  buckets: string[];
+  bucket: string;
+  prefixes: string[];
   expiration: number;
 }
 
@@ -23,7 +24,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async function (
   { actions: { createNode }, createNodeId, createContentDigest, reporter },
   pluginOptions: PluginOptionsType
 ) {
-  const { aws: awsConfig, buckets, expiration = 900 } = pluginOptions;
+  const { aws: awsConfig, bucket, prefixes, expiration = 900 } = pluginOptions;
 
   // configure aws
   AWS.config.update(awsConfig);
@@ -32,15 +33,15 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async function (
   reporter.verbose(`AWS S3 Config: ${JSON.stringify(s3.config, undefined, 2)}`);
 
   // get objects
-  const getS3ListObjects = async (parameters: { Bucket: string; ContinuationToken?: string }) => {
+  const getS3ListObjects = async (parameters: { Bucket: string; Prefix: string; ContinuationToken?: string }) => {
     return await s3.listObjectsV2(parameters).promise();
   };
 
-  const listAllS3Objects = async (bucket: string) => {
+  const listAllS3Objects = async (bucket: string, prefix: string) => {
     const allS3Objects: ObjectType[] = [];
 
     try {
-      const data = await getS3ListObjects({ Bucket: bucket });
+      const data = await getS3ListObjects({ Bucket: bucket, Prefix: prefix });
 
       if (data && data.Contents) {
         for (const object of data.Contents) {
@@ -59,6 +60,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async function (
       while (nextToken) {
         const data = await getS3ListObjects({
           Bucket: bucket,
+          Prefix: prefix,
           ContinuationToken: nextToken,
         });
 
@@ -78,7 +80,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async function (
 
   try {
     const allBucketsObjects: ObjectType[][] = await Promise.all(
-      buckets.map((bucket) => listAllS3Objects(bucket))
+      prefixes.map((prefix) => listAllS3Objects(bucket, prefix))
     );
 
     // flatten objects
@@ -121,6 +123,9 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = async function ({
   createNodeId,
 }: CreateNodeArgs<NodeType>) {
   if (node.internal.type === "S3Object" && node.Key && isImage(node.Key)) {
+    if (node.Key.endsWith(".pdf")) {
+      node.internal.mediaType = "application/pdf"
+    }
 
     try {
       // download image file and save as node

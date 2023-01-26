@@ -1,6 +1,6 @@
 {
   "name": "@jsonw23/gatsby-source-s3",
-  "description": "A Gatsby plugin to source objects and images from AWS S3", 
+  "description": "A Gatsby plugin to source objects and images from AWS S3",
   "version": "3.2.3",
   "contributors": [
     "Robin Métral <robin@metral.ch>",
@@ -8,8 +8,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsby-uc/plugins.git",
-    "directory": "packages/gatsby-source-s3"
+    "url": "https://github.com/jsonw23/gatsby-source-s3"
   },
   "license": "MIT",
   "keywords": [
@@ -24,6 +23,7 @@
     "@types/node": "^18.11.18",
     "babel-preset-gatsby-package": "^3.3.0",
     "cypress": "^11.2.0",
+    "gatsby": "^5.5.0",
     "start-server-and-test": "^1.15.2"
   },
   "scripts": {

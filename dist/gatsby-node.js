@@ -17,7 +17,8 @@ const sourceNodes = async function ({
 }, pluginOptions) {
   const {
     aws: awsConfig,
-    buckets,
+    bucket,
+    prefixes,
     expiration = 900
   } = pluginOptions;
 
@@ -30,11 +31,12 @@ const sourceNodes = async function ({
   const getS3ListObjects = async parameters => {
     return await s3.listObjectsV2(parameters).promise();
   };
-  const listAllS3Objects = async bucket => {
+  const listAllS3Objects = async (bucket, prefix) => {
     const allS3Objects = [];
     try {
       const data = await getS3ListObjects({
-        Bucket: bucket
+        Bucket: bucket,
+        Prefix: prefix
       });
       if (data && data.Contents) {
         for (const object of data.Contents) {
@@ -50,6 +52,7 @@ const sourceNodes = async function ({
       while (nextToken) {
         const data = await getS3ListObjects({
           Bucket: bucket,
+          Prefix: prefix,
           ContinuationToken: nextToken
         });
         if (data && data.Contents) {
@@ -68,7 +71,7 @@ const sourceNodes = async function ({
     return allS3Objects;
   };
   try {
-    const allBucketsObjects = await Promise.all(buckets.map(bucket => listAllS3Objects(bucket)));
+    const allBucketsObjects = await Promise.all(prefixes.map(prefix => listAllS3Objects(bucket, prefix)));
 
     // flatten objects
     const objects = allBucketsObjects.flat();
@@ -115,6 +118,9 @@ const onCreateNode = async function ({
   createNodeId
 }) {
   if (node.internal.type === "S3Object" && node.Key && isImage(node.Key)) {
+    if (node.Key.endsWith(".pdf")) {
+      node.internal.mediaType = "application/pdf";
+    }
     try {
       // download image file and save as node
       const imageFile = await (0, _gatsbySourceFilesystem.createRemoteFileNode)({
